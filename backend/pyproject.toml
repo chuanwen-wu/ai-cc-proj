@@ -34,10 +34,12 @@ dev = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+exclude = ["alembic"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "N"]
-ignore = ["E501"]
+# B008: FastAPI 的 Depends() 在参数默认值就是规范用法
+ignore = ["E501", "B008"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
