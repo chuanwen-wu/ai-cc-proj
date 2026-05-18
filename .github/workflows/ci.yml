@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install deps
+        run: uv pip install --system ".[dev]"
+
+      - name: Ruff
+        run: ruff check .
+
+      - name: Pytest
+        env:
+          DATABASE_URL: postgresql+psycopg://dev:dev@localhost:5432/app
+          JWT_SECRET: ci-secret
+          GOOGLE_CLIENT_ID: dummy.apps.googleusercontent.com
+        run: pytest
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+  compose-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build docker-compose
+        run: docker compose build
+        env:
+          POSTGRES_USER: dev
+          POSTGRES_PASSWORD: dev
+          POSTGRES_DB: app
+          JWT_SECRET: ci
+          JWT_ALGORITHM: HS256
+          JWT_EXPIRE_MINUTES: 60
+          GOOGLE_CLIENT_ID: dummy.apps.googleusercontent.com
+          GOOGLE_CLIENT_SECRET: dummy
+          NEXTAUTH_SECRET: ci
+          NEXTAUTH_URL: http://localhost:3000
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+          BACKEND_CORS_ORIGINS: http://localhost:3000

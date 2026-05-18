@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pnpm-store/
+
+# Build
+.next/
+dist/
+build/
+*.egg-info/
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Editors
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Testing
+coverage/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Database
+*.sqlite
+*.db
+
+# Docker volumes (local)
+pg_data/
+
+# Certs
+certs/
+*.pem
+*.key
+
+# Playwright MCP working dir (截图/快照缓存)
+.playwright-mcp/
