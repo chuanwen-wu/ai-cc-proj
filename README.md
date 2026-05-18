@@ -45,3 +45,4 @@ docker compose exec backend alembic upgrade head
 - **PM 出原型**：用 [v0.dev](https://v0.dev) 生成 UI，截图贴到 Issue
 - **工程师开发**：拉分支 → Claude Code 开发 → PR → 合并
 - **部署**：合并到 `main` 自动构建镜像 + SSH 部署到生产服务器
+test
