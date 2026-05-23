@@ -37,6 +37,8 @@ services:
       - ADMIN_EMAILS=${ADMIN_EMAILS}
       - PLATFORM_TREASURY_EMAIL=${PLATFORM_TREASURY_EMAIL}
       - BITFINEX_KEY_ENCRYPTION_KEY=${BITFINEX_KEY_ENCRYPTION_KEY}
+      - BITFINEX_API_BASE=${BITFINEX_API_BASE:-https://api.bitfinex.com}
+      - INSTANCE_ROLE=${INSTANCE_ROLE:-scheduler}
     depends_on:
       db:
         condition: service_healthy

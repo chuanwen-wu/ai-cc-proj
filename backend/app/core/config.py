@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     # Fernet master key（用 `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` 生成）
     BITFINEX_KEY_ENCRYPTION_KEY: str
 
+    # Bitfinex API base（测试时可指到 mock server）
+    BITFINEX_API_BASE: str = "https://api.bitfinex.com"
+
+    # 实例角色：`api`（默认，不启 scheduler）或 `scheduler`（同时启 API + scheduler）
+    INSTANCE_ROLE: str = "scheduler"
+
     @property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.BACKEND_CORS_ORIGINS.split(",") if o.strip()]
