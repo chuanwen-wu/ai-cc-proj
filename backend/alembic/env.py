@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 from app.core.config import settings
 from app.db.base import Base
-from app.models import user  # noqa: F401 — 让 Alembic 能发现所有 model
+from app.models import *  # noqa: F401, F403 — 让 Alembic 能发现所有 model
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
