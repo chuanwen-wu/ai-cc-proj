@@ -28,7 +28,7 @@ labels: feature, needs-review
 
 
 ## 原型图
-<!-- 用 v0.dev 或 claude.ai 生成原型后，把链接 / 截图贴到这里 -->
+<!-- 用 [claude.ai](https://claude.ai/new) 的 Artifact 功能生成原型后，把截图 + Artifact 代码贴到这里 -->
 
 
 ## 参考资料
