@@ -31,7 +31,7 @@ backend/
   alembic/          # 数据库迁移脚本
   tests/            # pytest 测试
 docker/             # nginx 等容器配置
-docs/prototypes/    # PM 用 v0.dev 生成的原型截图存这里
+docs/prototypes/    # PM 用 claude.ai Artifact 生成的原型截图存这里
 ```
 
 ## 开发约定

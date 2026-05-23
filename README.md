@@ -42,6 +42,6 @@ docker compose exec backend alembic upgrade head
 ## 协作流程
 
 - **PM 提需求**：用 GitHub Issue 模板（功能需求 / Bug 上报）
-- **PM 出原型**：用 [v0.dev](https://v0.dev) 生成 UI，截图贴到 Issue
+- **PM 出原型**：用 [claude.ai](https://claude.ai/new) 的 Artifact 功能生成 UI（每个前端 Issue 已附中文提示词模板），截图 + 代码贴到 Issue
 - **工程师开发**：拉分支 → Claude Code 开发 → PR → 合并
 - **部署**：合并到 `main` 自动构建镜像 + SSH 部署到生产服务器
