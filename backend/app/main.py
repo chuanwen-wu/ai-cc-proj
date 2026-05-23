@@ -10,6 +10,7 @@ from app.api.v1 import (
     admin_pipeline,
     admin_users,
     auth,
+    user_me,
     users,
 )
 from app.core.config import settings
@@ -55,6 +56,7 @@ app.include_router(admin_accounts.router, prefix="/api/v1")
 app.include_router(admin_pipeline.router, prefix="/api/v1")
 app.include_router(admin_earnings.router, prefix="/api/v1")
 app.include_router(admin_users.router, prefix="/api/v1")
+app.include_router(user_me.router, prefix="/api/v1")
 
 
 @app.get("/health")
