@@ -3,8 +3,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import admin, auth, users
+from app.api.v1 import admin, admin_accounts, admin_pipeline, auth, users
 from app.core.config import settings
+from app.services.scheduler import shutdown_scheduler, start_scheduler
 
 
 def _validate_startup_config() -> None:
@@ -22,7 +23,11 @@ def _validate_startup_config() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ARG001
     _validate_startup_config()
-    yield
+    start_scheduler()
+    try:
+        yield
+    finally:
+        shutdown_scheduler()
 
 
 app = FastAPI(title="ai-cc-proj", version="0.1.0", lifespan=lifespan)
@@ -38,6 +43,8 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
+app.include_router(admin_accounts.router, prefix="/api/v1")
+app.include_router(admin_pipeline.router, prefix="/api/v1")
 
 
 @app.get("/health")
