@@ -3,7 +3,14 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import admin, admin_accounts, admin_pipeline, auth, users
+from app.api.v1 import (
+    admin,
+    admin_accounts,
+    admin_earnings,
+    admin_pipeline,
+    auth,
+    users,
+)
 from app.core.config import settings
 from app.services.scheduler import shutdown_scheduler, start_scheduler
 
@@ -45,6 +52,7 @@ app.include_router(users.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
 app.include_router(admin_accounts.router, prefix="/api/v1")
 app.include_router(admin_pipeline.router, prefix="/api/v1")
+app.include_router(admin_earnings.router, prefix="/api/v1")
 
 
 @app.get("/health")
