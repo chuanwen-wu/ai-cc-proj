@@ -32,6 +32,7 @@ jobs:
           DATABASE_URL: postgresql+psycopg://dev:dev@localhost:5432/app
           JWT_SECRET: ci-secret
           GOOGLE_CLIENT_ID: dummy.apps.googleusercontent.com
+          BITFINEX_KEY_ENCRYPTION_KEY: _-rO6JD1jf02ThJtUMtPAONiZ9hSJOmSUoNkTJbdrnI=
         run: pytest
 
   frontend:
@@ -80,3 +81,6 @@ jobs:
           NEXTAUTH_URL: http://localhost:3000
           NEXT_PUBLIC_API_URL: http://localhost:8000
           BACKEND_CORS_ORIGINS: http://localhost:3000
+          ADMIN_EMAILS: ""
+          PLATFORM_TREASURY_EMAIL: ""
+          BITFINEX_KEY_ENCRYPTION_KEY: _-rO6JD1jf02ThJtUMtPAONiZ9hSJOmSUoNkTJbdrnI=

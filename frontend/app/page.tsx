@@ -1,7 +1,47 @@
 import { auth, signIn, signOut } from "@/auth";
 
+const INTERNAL_API_URL = process.env.INTERNAL_API_URL ?? "http://backend:8000";
+
+type Me = {
+  id: number;
+  email: string;
+  name: string | null;
+  avatar_url: string | null;
+  role: string;
+  created_at: string;
+};
+
+async function fetchMe(token: string): Promise<Me | null> {
+  try {
+    const res = await fetch(`${INTERNAL_API_URL}/api/v1/users/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as Me;
+  } catch {
+    return null;
+  }
+}
+
+async function pingAdmin(token: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${INTERNAL_API_URL}/api/v1/admin/ping`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 export default async function Home() {
   const session = await auth();
+  const me = session?.backendToken ? await fetchMe(session.backendToken) : null;
+  const adminOk = session?.backendToken && me?.role === "admin"
+    ? await pingAdmin(session.backendToken)
+    : false;
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
@@ -25,9 +65,34 @@ export default async function Home() {
                 <div className="text-sm text-gray-500">{session.user.email}</div>
               </div>
             </div>
-            <div className="text-xs text-gray-500">
-              Backend JWT: {session.backendToken ? "✅ 已签发" : "⚠️ 未签发，检查后端 /api/v1/auth/google"}
+
+            <div className="space-y-1 rounded-md bg-gray-50 p-3 text-sm">
+              <div>
+                <span className="text-gray-500">Backend JWT:</span>{" "}
+                {session.backendToken ? "✅ 已签发" : "⚠️ 未签发"}
+              </div>
+              {me && (
+                <div>
+                  <span className="text-gray-500">Role:</span>{" "}
+                  <span
+                    className={
+                      me.role === "admin"
+                        ? "rounded bg-purple-100 px-2 py-0.5 font-medium text-purple-700"
+                        : "rounded bg-gray-200 px-2 py-0.5 font-medium text-gray-700"
+                    }
+                  >
+                    {me.role}
+                  </span>
+                </div>
+              )}
+              {me?.role === "admin" && (
+                <div>
+                  <span className="text-gray-500">/admin/ping:</span>{" "}
+                  {adminOk ? "✅ 200" : "❌ 失败"}
+                </div>
+              )}
             </div>
+
             <form
               action={async () => {
                 "use server";
