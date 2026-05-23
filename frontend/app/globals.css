@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..800,0..100&family=Geist:wght@300..600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300..600&display=swap');
+
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Geist', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+}
+
+.font-display {
+  font-family: 'Fraunces', 'Noto Serif SC', ui-serif, Georgia, serif;
+  font-variation-settings: 'opsz' 144, 'SOFT' 30;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
