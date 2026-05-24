@@ -1,6 +1,6 @@
 """APScheduler 集成。
 
-定时 01:30 UTC 跑前一日的 pipeline。只在 INSTANCE_ROLE='scheduler' 时启动。
+定时 01:35 UTC 跑前一日的 pipeline。只在 INSTANCE_ROLE='scheduler' 时启动。
 """
 
 from __future__ import annotations
@@ -48,7 +48,7 @@ def start_scheduler() -> BackgroundScheduler | None:
     sched = BackgroundScheduler(timezone="UTC")
     sched.add_job(
         _run_daily_pipeline_job,
-        trigger=CronTrigger(hour=1, minute=30, timezone="UTC"),
+        trigger=CronTrigger(hour=1, minute=35, timezone="UTC"),
         id="daily_pipeline",
         replace_existing=True,
         coalesce=True,
@@ -57,7 +57,7 @@ def start_scheduler() -> BackgroundScheduler | None:
     sched.start()
     _scheduler = sched
     logger.info(
-        "Scheduler 已启动：daily_pipeline cron 30 1 * * * UTC (= 09:30 HKT)"
+        "Scheduler 已启动：daily_pipeline cron 35 1 * * * UTC (= 09:35 HKT)"
     )
     return sched
 

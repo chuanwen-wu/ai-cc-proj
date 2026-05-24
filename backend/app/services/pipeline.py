@@ -1,6 +1,6 @@
 """Daily Bitfinex funding pipeline.
 
-每日（默认 01:30 UTC）跑一次：拉前一日 funding 收益 → 计算 NAV → 扣平台费 → 发 treasury 份额 → 写用户份额快照。
+每日（默认 01:35 UTC）跑一次：拉前一日 funding 收益 → 计算 NAV → 扣平台费 → 发 treasury 份额 → 写用户份额快照。
 
 可重入：同一日期重跑会先清掉旧数据再算。
 """
