@@ -186,6 +186,12 @@ export default function DashboardOverview({ user, summary, series }: Props) {
               >
                 用户管理 →
               </Link>
+              <Link
+                href="/admin/bitfinex-accounts"
+                className="rounded-md border border-stone-200 bg-white px-3 py-2 text-xs font-medium text-stone-700 transition hover:bg-stone-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900"
+              >
+                Bitfinex 账号 →
+              </Link>
             </div>
           )}
         </header>

@@ -86,10 +86,13 @@ export async function adjustShares(
   changeAmount: string,
   type: AdjustLabel,
   reason: string,
+  effectiveDate?: string,
 ): Promise<UserRow> {
+  const body: Record<string, unknown> = { change_amount: changeAmount, type, reason };
+  if (effectiveDate) body.effective_date = effectiveDate;
   const updated = await call<UserRow>(`/api/v1/admin/users/${userId}/shares`, {
     method: "POST",
-    body: JSON.stringify({ change_amount: changeAmount, type, reason }),
+    body: JSON.stringify(body),
   });
   revalidatePath("/admin/users");
   return updated;

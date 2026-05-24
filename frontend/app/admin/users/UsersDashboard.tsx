@@ -93,9 +93,12 @@ function AdjustDialog({
 }) {
   const [deltaInput, setDeltaInput] = useState("");
   const [type, setType] = useState<AdjustLabel>("认购入金");
+  const [effectiveDate, setEffectiveDate] = useState("");
   const [reason, setReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // 该弹窗仅在用户点击后才挂载（非 SSR），可直接取当前 UTC 日期作为上限
+  const todayUTC = new Date().toISOString().slice(0, 10);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -125,7 +128,13 @@ function AdjustDialog({
     setSubmitting(true);
     setError(null);
     try {
-      const updated = await adjustShares(user.id, deltaInput.trim(), type, reason.trim());
+      const updated = await adjustShares(
+        user.id,
+        deltaInput.trim(),
+        type,
+        reason.trim(),
+        effectiveDate || undefined,
+      );
       onAdjusted(updated);
       onClose();
     } catch (e) {
@@ -201,6 +210,25 @@ function AdjustDialog({
                 </option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <div className="mb-2 flex items-baseline justify-between">
+              <label className="block text-[10px] font-medium uppercase tracking-[0.14em] text-stone-500 dark:text-zinc-500">
+                调整日期
+              </label>
+              <span className="font-mono text-[10px] text-stone-400 dark:text-zinc-600">
+                不填默认当前时间
+              </span>
+            </div>
+            <input
+              type="date"
+              lang="en-CA"
+              value={effectiveDate}
+              max={todayUTC}
+              onChange={(e) => setEffectiveDate(e.target.value)}
+              className={inputClass}
+            />
           </div>
 
           <div>

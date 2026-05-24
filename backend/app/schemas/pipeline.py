@@ -15,6 +15,20 @@ class PipelineRunResponse(BaseModel):
     message: str
 
 
+class PipelineRangeRequest(BaseModel):
+    start_date: date
+    end_date: date
+
+
+class PipelineRangeRunResponse(BaseModel):
+    start_date: date
+    end_date: date
+    total_days: int
+    computed_days: int
+    skipped_days: int
+    results: list[PipelineRunResponse]
+
+
 class DailyNavOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

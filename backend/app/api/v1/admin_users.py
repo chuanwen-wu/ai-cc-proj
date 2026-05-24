@@ -1,5 +1,6 @@
 """管理员用户管理接口（admin-only）。"""
 
+from datetime import UTC, datetime, time
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -109,6 +110,9 @@ def adjust_shares(
     if delta == 0:
         raise HTTPException(status_code=400, detail="change_amount must be non-zero")
 
+    if payload.effective_date is not None and payload.effective_date > datetime.now(UTC).date():
+        raise HTTPException(status_code=400, detail="生效日期不能是未来日期")
+
     current = _user_shares(db, user_id)
     new_shares = current + delta
     if new_shares < 0:
@@ -120,16 +124,19 @@ def adjust_shares(
     change_type = (
         ShareChangeType.admin_grant.value if delta > 0 else ShareChangeType.admin_revoke.value
     )
-    db.add(
-        ShareTransaction(
-            user_id=user_id,
-            change_amount=delta,
-            change_type=change_type,
-            reason=f"[{payload.type}] {payload.reason.strip()}",
-            operator_id=current_admin.id,
-            related_date=None,
-        )
+    tx = ShareTransaction(
+        user_id=user_id,
+        change_amount=delta,
+        change_type=change_type,
+        reason=f"[{payload.type}] {payload.reason.strip()}",
+        operator_id=current_admin.id,
+        related_date=None,
     )
+    # 指定了生效日期就覆盖 created_at（pipeline 按 created_at 判定份额何时生效）；
+    # 不填则走 server_default=now()。
+    if payload.effective_date is not None:
+        tx.created_at = datetime.combine(payload.effective_date, time.min, tzinfo=UTC)
+    db.add(tx)
     db.commit()
 
     nav = _current_nav(db)
