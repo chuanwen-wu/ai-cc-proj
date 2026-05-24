@@ -7,7 +7,7 @@
 * 响应结构正确（空 DB、成功调整）
 """
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from unittest.mock import MagicMock
 
@@ -315,6 +315,73 @@ def test_adjust_revoke_uses_admin_revoke_type() -> None:
         saved_tx = db.add.call_args.args[0]
         assert saved_tx.change_type == "admin_revoke"
         assert saved_tx.reason == "[赎回出金] partial redemption"
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_adjust_without_effective_date_leaves_created_at_unset() -> None:
+    """不传 effective_date 时不显式赋值 created_at（由 DB server_default 填）。"""
+    ts = datetime(2026, 5, 23, 10, 0, 0, tzinfo=UTC)
+    db = _db_for_adjust(current_shares=Decimal("100"), max_created_at=ts)
+    app.dependency_overrides[get_current_user] = _admin
+    app.dependency_overrides[get_db] = lambda: db
+    try:
+        client = TestClient(app)
+        r = client.post(
+            "/api/v1/admin/users/7/shares",
+            json={"change_amount": "50", "type": "认购入金", "reason": "no date given"},
+        )
+        assert r.status_code == 201
+        saved_tx = db.add.call_args.args[0]
+        assert saved_tx.created_at is None  # 未在 Python 层赋值
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_adjust_with_effective_date_sets_created_at() -> None:
+    """传 effective_date → created_at 设为该日 00:00 UTC（pipeline 据此判定生效时点）。"""
+    ts = datetime(2026, 5, 23, 10, 0, 0, tzinfo=UTC)
+    db = _db_for_adjust(current_shares=Decimal("100"), max_created_at=ts)
+    app.dependency_overrides[get_current_user] = _admin
+    app.dependency_overrides[get_db] = lambda: db
+    try:
+        client = TestClient(app)
+        r = client.post(
+            "/api/v1/admin/users/7/shares",
+            json={
+                "change_amount": "50",
+                "type": "认购入金",
+                "reason": "backdated grant",
+                "effective_date": "2026-04-22",
+            },
+        )
+        assert r.status_code == 201
+        saved_tx = db.add.call_args.args[0]
+        assert saved_tx.created_at == datetime(2026, 4, 22, 0, 0, 0, tzinfo=UTC)
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_adjust_future_effective_date_rejected() -> None:
+    db = _db_for_adjust(current_shares=Decimal("100"))
+    app.dependency_overrides[get_current_user] = _admin
+    app.dependency_overrides[get_db] = lambda: db
+    try:
+        client = TestClient(app)
+        future = (datetime.now(UTC) + timedelta(days=1)).date().isoformat()
+        r = client.post(
+            "/api/v1/admin/users/7/shares",
+            json={
+                "change_amount": "50",
+                "type": "认购入金",
+                "reason": "future effective date",
+                "effective_date": future,
+            },
+        )
+        assert r.status_code == 400
+        assert "未来" in r.json()["detail"]
+        db.add.assert_not_called()
+        db.commit.assert_not_called()
     finally:
         app.dependency_overrides.clear()
 

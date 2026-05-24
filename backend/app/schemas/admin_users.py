@@ -33,6 +33,9 @@ class AdjustRequest(BaseModel):
     change_amount: Decimal = Field(description="正数=入金，负数=出金")
     type: AdjustLabel
     reason: str = Field(min_length=5, max_length=500)
+    # 本次调整的生效日期（UTC 自然日）。决定该笔变动在 pipeline 里何时生效（写入 created_at）。
+    # 不填则用当前时间。
+    effective_date: date_type | None = None
 
 
 class TransactionRow(BaseModel):
